@@ -4,9 +4,14 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('week-9-node-task-omolounnu-oluwafemi:server');
-var http = require('http');
+const app = require('../dist/app').default;
+const debug = require('debug')('week-9-node-task-omolounnu-oluwafemi:server');
+const http = require('http');
+
+
+// const app = require('../dist/app').default;
+// const debug = require('debug')('week5-009:server');
+// const http = require('http');
 
 /**
  * Get port from environment and store in Express.
