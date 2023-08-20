@@ -3,16 +3,22 @@ import express, { Request, Response, NextFunction} from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan'
+import {config} from 'dotenv'
+import database from './config/database';
 
 import indexRouter from './routes/index'
 import usersRouter from './routes/users';
+import notesRouter from './routes/notes';
 
+database()
+config()
 
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -22,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/notes', notesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

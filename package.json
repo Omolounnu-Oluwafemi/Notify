@@ -3,18 +3,24 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "start:dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "@types/cookie-parser": "^1.4.3",
+    "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.17",
+    "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.3.1",
     "ejs": "~2.6.1",
     "express": "^4.18.2",
     "http-errors": "~1.6.3",
+    "mongoose": "^7.4.3",
     "morgan": "~1.9.1",
+    "nodemon": "^3.0.1",
     "typescipt": "^1.0.0"
   }
 }
