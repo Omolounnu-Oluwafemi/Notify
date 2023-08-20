@@ -16,7 +16,7 @@ const noteSchema = new mongoose_1.default.Schema({
         default: 'My note description'
     },
     DueDate: {
-        type: Date,
+        type: String,
         required: [true, 'A note must have a dueDate'],
     },
     status: {

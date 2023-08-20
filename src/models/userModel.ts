@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
     },
 )
 
-export default User = mongoose.model('User', userSchema)
+export const User = mongoose.model('User', userSchema)
 
 // User.hasMany( Note, {
 //     foreignKey: 'userId'
