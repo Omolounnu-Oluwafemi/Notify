@@ -22,6 +22,10 @@ const noteSchema = new mongoose_1.default.Schema({
     status: {
         type: String,
         required: [true, 'A note must have a status'],
+        enum: {
+            values: ['Yet to started', 'started', 'Completed'],
+            message: 'Difficulty level can either be Yet to started, started or Completed',
+        },
     },
 });
 exports.Note = mongoose_1.default.model('Note', noteSchema);
