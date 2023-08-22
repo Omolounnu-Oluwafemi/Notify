@@ -1,7 +1,16 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
+import mongoose, {Schema, Document, model} from 'mongoose';
+import * as bcrypt from 'bcryptjs';
+import { validateEmail, validatePassword } from '../utils/validation';
 
-const userSchema = new mongoose.Schema({
+export interface IUser extends Document {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+const userSchema = new Schema({
   firstname: {
     type: String,
     required: [true, 'Please provide your first name'],
@@ -13,36 +22,54 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Please provide a valid email address'],
-    unique: true,
     lowercase: true,
+    unique: true,
     validate: {
         //This is only going to work on CREATE and SAVE!!!
-        validator: function (el:string) {
-          return /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(el);
-        },
+        validator: validateEmail,
         message: 'Please provide a valid email address',
       },
   },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
+    validate: {
+        validator: validatePassword,
+        message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+    },
   },
   passwordConfirm: {
     type: String,
     required: [true, 'Please confirm your password'],
+    validate: {
+        //This is only going to work on CREATE and SAVE!!!
+        validator: function (el: any) {
+          return el === this.password;
+        },
+        message: 'Passwords are not the same',
+      },
   },
 });
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', function(next) {
     // This function will only run if password was modified
     if(!this.isModified('password')) return next();
 
-    // Hash the password with cost of 12
-    this.password = await bcrypt.hash(this.password, 12);
+    // Hash the password with cost of 10
+    this.password =  bcrypt.hash(this.password, 10);
 
     // Delete passwordConfirm field
     this.passwordConfirm = undefined
     next();
 })
 
-export const User = mongoose.model('User', userSchema);
+userSchema.methods.correctPassword = function (
+  submittedPassword: string,
+  userPassword: string,
+) {
+  return bcrypt.compareSync(submittedPassword, userPassword);
+};
+
+export const User = model('User', userSchema);
+
+

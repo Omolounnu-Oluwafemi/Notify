@@ -8,7 +8,9 @@ const dotenv_1 = require("dotenv");
 const database = async () => {
     (0, dotenv_1.config)();
     try {
-        const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
+        const dataBase = process.env.DATABASE;
+        const passWord = process.env.DATABASE_PASSWORD;
+        const DB = dataBase.replace('<PASSWORD>', passWord);
         await mongoose_1.default.connect(DB);
         console.log('DB connection successful!');
     }
