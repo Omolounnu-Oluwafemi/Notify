@@ -10,7 +10,7 @@ export const signUp = async (req: Request, res: Response) => {
           user: newUser,
         },
       });
-  } catch (error: any) {
+  } catch (error) {
     res.status(400).json({
         status: 'failure',
         message: error,
