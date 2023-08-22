@@ -8,32 +8,29 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const userSchema = new mongoose_1.default.Schema({
     firstname: {
         type: String,
-        required: [true, 'A user must have a firstname'],
+        required: [true, 'Please tell us your name'],
     },
     lastname: {
         type: String,
-        required: [true, 'A user must have a lastname'],
+        required: [true, 'Please tell us your last name'],
     },
     username: {
         type: String,
-        required: [true, 'A user must have a username'],
-        unique: true,
-        // primaryKey: true,
+        required: [true, 'Please provide a username'],
     },
     email: {
         type: String,
-        required: [true, 'A user must have a username'],
+        required: [true, 'Please provide a valid email address'],
         unique: true,
+        lowercase: true,
     },
     password: {
         type: String,
-        required: [true, 'A user must have a username'],
+        required: [true, 'Please provide a password'],
+    },
+    passwordConfirm: {
+        type: String,
+        required: [true, 'Please confirm your password'],
     },
 });
 exports.User = mongoose_1.default.model('User', userSchema);
-// User.hasMany( Note, {
-//     foreignKey: 'userId'
-// })
-// Note.belongsTo(User, {
-//     foreignKey: 'userId'
-// })
