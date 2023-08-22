@@ -14,10 +14,6 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: [true, 'Please tell us your last name'],
     },
-    username: {
-        type: String,
-        required: [true, 'Please provide a username'],
-    },
     email: {
         type: String,
         required: [true, 'Please provide a valid email address'],

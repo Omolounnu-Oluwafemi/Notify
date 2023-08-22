@@ -1,32 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Login = exports.signUp = void 0;
-const userModel_1 = require("./../models/userModel");
-const signUp = async function (req, res, next) {
-    try {
-        const user = await userModel_1.User.create(req.body);
-        res.status(200).json({
-            status: 'User created',
-            data: {
-                user
-            }
-        });
-    }
-    catch (error) {
-        res.status(400).json({
-            status: 'Failure',
-            message: error,
-        });
-    }
+exports.deleteUser = exports.updateUser = exports.createUser = exports.getUser = exports.getUsers = void 0;
+const getUsers = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is not yet created',
+    });
 };
-exports.signUp = signUp;
-const Login = async function (req, res, next) {
-    //  try {
-    //     const user = await User.find
-    //        res.status(200).json({
-    //            message: 'User logged in'
-    //        })
-    //  } catch (error) {
-    //  }
+exports.getUsers = getUsers;
+const getUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is yet to be created',
+    });
 };
-exports.Login = Login;
+exports.getUser = getUser;
+const createUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is yet to be created',
+    });
+};
+exports.createUser = createUser;
+const updateUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is yet to be created',
+    });
+};
+exports.updateUser = updateUser;
+const deleteUser = (req, res) => {
+    res.status(500).json({
+        status: 'error',
+        message: 'This route is yet to be created',
+    });
+};
+exports.deleteUser = deleteUser;
