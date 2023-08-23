@@ -1,4 +1,4 @@
-import mongoose, {Schema, Document, model} from 'mongoose';
+import  {Schema, Document, model} from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { validateEmail, validatePassword } from '../utils/validation';
 
@@ -69,6 +69,8 @@ userSchema.methods.correctPassword = function (
 ) {
   return bcrypt.compareSync(submittedPassword, userPassword);
 };
+
+
 
 export const User = model('User', userSchema);
 

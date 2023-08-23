@@ -37,8 +37,10 @@ export const signUp = async (req: Request, res: Response, next:NextFunction) => 
     res.status(400).json({
         status: 'failure',
         message,
-      });
-  }
+      }).render('signup', {
+        message
+  });
+};
 }
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
@@ -72,3 +74,54 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   });
 };
 
+export const protect = async (req: Request, res: Response, next: NextFunction) => {
+  //1. Getting token and check if it's there
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+    console.log(token);
+  }
+
+  if (!token) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'You are not logged in! Please log in to get access.',
+    });
+  }
+
+  //2. Verification token
+  try {
+    // eslint-disable-next-line no-shadow
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.id;
+  } catch (err) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'Invalid token',
+    });
+  }
+
+  //3. Check if user still exists
+  const userExists = await User.findById(req.user);
+  if (!userExists) {
+    return res.status(401).json({
+      status: 'fail',
+      message: 'The user belonging to this token does no longer exist',
+    });
+  }
+
+  // //4. Check if user changed password after the token was issued
+  // if (currentUser.changedPasswordAfter(decoded.iat)) {
+  //   return res.status(401).json({
+  //     status: 'fail',
+  //     message: 'User recently changed password! Please log in again.',
+  //   });
+  // }
+
+  // //GRANT ACCESS TO PROTECTED ROUTE
+  // req.user = currentUser;
+  next();
+}

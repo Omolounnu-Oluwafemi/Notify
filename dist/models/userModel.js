@@ -22,15 +22,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
+const mongoose_1 = require("mongoose");
 const bcrypt = __importStar(require("bcryptjs"));
 const validation_1 = require("../utils/validation");
-const userSchema = new mongoose_1.default.Schema({
+const userSchema = new mongoose_1.Schema({
     firstname: {
         type: String,
         required: [true, 'Please provide your first name'],
@@ -70,14 +67,17 @@ const userSchema = new mongoose_1.default.Schema({
         },
     },
 });
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', function (next) {
     // This function will only run if password was modified
     if (!this.isModified('password'))
         return next();
     // Hash the password with cost of 10
-    this.password = await bcrypt.hash(this.password, 10);
+    this.password = bcrypt.hash(this.password, 10);
     // Delete passwordConfirm field
     this.passwordConfirm = undefined;
     next();
 });
-exports.User = mongoose_1.default.model('User', userSchema);
+userSchema.methods.correctPassword = function (submittedPassword, userPassword) {
+    return bcrypt.compareSync(submittedPassword, userPassword);
+};
+exports.User = (0, mongoose_1.model)('User', userSchema);
