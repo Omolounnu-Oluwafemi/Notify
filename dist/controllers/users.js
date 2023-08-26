@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.createUser = exports.getUser = exports.getUsers = void 0;
+exports.dashboard = exports.deleteUser = exports.updateUser = exports.getUser = exports.getUsers = void 0;
+const userModel_js_1 = require("./../models/userModel.js");
 const getUsers = (req, res) => {
     res.status(500).json({
         status: 'error',
@@ -9,19 +10,13 @@ const getUsers = (req, res) => {
 };
 exports.getUsers = getUsers;
 const getUser = (req, res) => {
+    const user = userModel_js_1.User.findById(req.params.id);
     res.status(500).json({
         status: 'error',
         message: 'This route is yet to be created',
     });
 };
 exports.getUser = getUser;
-const createUser = (req, res) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is yet to be created',
-    });
-};
-exports.createUser = createUser;
 const updateUser = (req, res) => {
     res.status(500).json({
         status: 'error',
@@ -36,3 +31,11 @@ const deleteUser = (req, res) => {
     });
 };
 exports.deleteUser = deleteUser;
+//Dashboard controller
+async function dashboard(req, res) {
+    const usersNote = await userModel_js_1.User.findById(req.params.id);
+    res.render("Dashboard", {
+        usersNote
+    });
+}
+exports.dashboard = dashboard;

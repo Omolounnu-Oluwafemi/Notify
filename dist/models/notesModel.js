@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Note = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
-const noteSchema = new mongoose_1.default.Schema({
+const mongoose_1 = require("mongoose");
+const noteSchema = new mongoose_1.Schema({
     title: {
         type: String,
         required: [true, 'A note must have a title'],
@@ -15,17 +12,21 @@ const noteSchema = new mongoose_1.default.Schema({
         type: String,
         default: 'My note description'
     },
-    DueDate: {
-        type: String,
+    dueDate: {
+        type: Date,
         required: [true, 'A note must have a dueDate'],
     },
     status: {
         type: String,
         required: [true, 'A note must have a status'],
         enum: {
-            values: ['Yet to started', 'started', 'Completed'],
-            message: 'Difficulty level can either be Yet to started, started or Completed',
+            values: ['Pending', 'In Progress', 'Completed'],
+            message: 'status level can either be Pending, In progress or Completed',
         },
     },
+    userId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        required: true,
+    },
 });
-exports.Note = mongoose_1.default.model('Note', noteSchema);
+exports.Note = (0, mongoose_1.model)('Note', noteSchema);

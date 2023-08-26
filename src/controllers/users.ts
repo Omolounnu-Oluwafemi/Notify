@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { User } from './../models/userModel';
+import { User } from './../models/userModel.js';
 
 export const getUsers = (req: Request, res: Response) => {
     res.status(500).json({
@@ -9,13 +9,8 @@ export const getUsers = (req: Request, res: Response) => {
   };
   
   export const getUser = (req: Request, res: Response) => {
-    res.status(500).json({
-      status: 'error',
-      message: 'This route is yet to be created',
-    });
-  };
-  
-  export const createUser = (req: Request, res: Response) => {
+    const user = User.findById(req.params.id);
+
     res.status(500).json({
       status: 'error',
       message: 'This route is yet to be created',
@@ -36,3 +31,11 @@ export const getUsers = (req: Request, res: Response) => {
     });
   };
   
+
+  //Dashboard controller
+export async  function dashboard(req: Request, res: Response) {  
+  const usersNote = await User.findById(req.params.id);
+  res.render("Dashboard", {
+   usersNote
+  })
+}

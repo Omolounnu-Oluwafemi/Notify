@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { Note } from '../models/notesModel';
 
-export const getNotes = async function(req: Request, res: Response, next: NextFunction) {
+export const getNotes = async function(req: Request, res: Response) {
     try {
         const notes = await Note.find();
+
             res.status(200).json({
                 status: 'success',
                 results: notes.length,
@@ -19,10 +20,11 @@ export const getNotes = async function(req: Request, res: Response, next: NextFu
         }
     }
 
-export const createNote = async function(req: Request, res: Response, next:NextFunction) {
+export const createNote = async function(req: Request, res: Response) {
 
     try {
-        const note = await Note.create(req.body);
+
+        const note = await Note.create(req.body,);
         res.status(200).json({
             status: 'success',
             data: {
@@ -36,7 +38,8 @@ export const createNote = async function(req: Request, res: Response, next:NextF
           });
     }
 }
-export const updateNote = async function(req: Request, res: Response, next:NextFunction) {
+
+export const updateNote = async function(req: Request, res: Response) {
     try {
         const updateNote = await Note.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -56,7 +59,7 @@ export const updateNote = async function(req: Request, res: Response, next:NextF
     }
 }
 
-export const deleteNote = async function(req: Request, res: Response, next:NextFunction) {
+export const deleteNote = async function(req: Request, res: Response) {
     try {
         const deleteNote = await Note.findByIdAndDelete(req.params.id);
         res.status(200).json({

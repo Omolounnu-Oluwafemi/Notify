@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteNote = exports.updateNote = exports.createNote = exports.getNotes = void 0;
 const notesModel_1 = require("../models/notesModel");
-const getNotes = async function (req, res, next) {
+const getNotes = async function (req, res) {
     try {
         const notes = await notesModel_1.Note.find();
         res.status(200).json({
@@ -21,7 +21,7 @@ const getNotes = async function (req, res, next) {
     }
 };
 exports.getNotes = getNotes;
-const createNote = async function (req, res, next) {
+const createNote = async function (req, res) {
     try {
         const note = await notesModel_1.Note.create(req.body);
         res.status(200).json({
@@ -39,7 +39,7 @@ const createNote = async function (req, res, next) {
     }
 };
 exports.createNote = createNote;
-const updateNote = async function (req, res, next) {
+const updateNote = async function (req, res) {
     try {
         const updateNote = await notesModel_1.Note.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -60,7 +60,7 @@ const updateNote = async function (req, res, next) {
     }
 };
 exports.updateNote = updateNote;
-const deleteNote = async function (req, res, next) {
+const deleteNote = async function (req, res) {
     try {
         const deleteNote = await notesModel_1.Note.findByIdAndDelete(req.params.id);
         res.status(200).json({

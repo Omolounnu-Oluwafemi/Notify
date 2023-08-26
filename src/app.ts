@@ -3,15 +3,16 @@ import express, { Request, Response, NextFunction} from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan'
-import {config} from 'dotenv'
+import dotenv from 'dotenv'
 import database from './config/database';
 
 import indexRouter from './routes/index'
 import usersRouter from './routes/users';
 import notesRouter from './routes/notes';
+import authRouter from './routes/auth'
 
 database()
-config()
+dotenv.config()
 
 const app = express();
 
@@ -26,7 +27,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "..",'public')));
 
-app.use('/', indexRouter);
+app.use('/' , indexRouter);
+app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/notes', notesRouter);
 

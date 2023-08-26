@@ -1,78 +1,110 @@
+import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken';
+import jwt, {Secret} from 'jsonwebtoken';
+import { registerUser, options, loginUser } from "../utils/utils";
 import {User} from '../models/userModel';
-import { ObjectId } from 'mongoose';
+import { Types } from 'mongoose';
+import { config } from 'dotenv';
 
-const signToken = (id: ObjectId) =>{
- return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-}
+config()
 
-export const signUp = async (req: Request, res: Response, next:NextFunction) => {
+const jwtsecret: Secret = process.env.SECRET_JWT as Secret;
+
+export const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const newUser = await User.create({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        password: req.body.password,
-        passwordConfirm: req.body.passwordConfirm,
-    });
-    const token = signToken(newUser._id);
+    const validationResult = registerUser.validate(req.body, options);
 
-    res.status(201).json({
-        status: 'success',
-        token,
-        data: {
-          user: newUser,
-        },
-      });
-  } catch (error:any) {
-    let message = 'error signing up user';
-    if (error.name === 'ValidationError') {
-      message = Object.values(error.errors).map((err: any) => err.message).join(', ');
-    } else if (req.body.email === User.email) {
-      message = 'User with that email already exists';
+    if (validationResult.error) {
+      const message = validationResult.error.details.map((detail) => detail.message).join(',');
+      return res.redirect('/signup?error=' + encodeURIComponent(message));
     }
-    res.status(400).json({
-        status: 'failure',
-        message,
-      }).render('signup', {
-        message
-  });
-};
-}
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body;
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+      const message = 'User with that email already exists';
+      return res.redirect('/signup?error=' + encodeURIComponent(message));
+    } else {
 
-  //1.  Check if email and password exist
-  if (!email || !password) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Please provide email and password!',
-    });
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+      const newUser = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: hashedPassword,
+        passwordConfirm: req.body.passwordConfirm,
+      });
+
+      await newUser.save();
+
+      const { _id } = newUser;
+
+      // Utility function to generate token
+      const generateToken = (id: Types.ObjectId): string => {
+        return jwt.sign({ id }, jwtsecret, {
+          expiresIn: process.env.JWT_EXPIRES_IN as string,
+        });
+      }
+      const token: string = generateToken(_id);
+
+      return res.redirect("/login")
+    }
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
-
-  //2.  Check if user exists && password is correct
-  const user = await User.findOne({ email }).select('+password');
-
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'Incorrect email or password',
-    });
-  }
-
-  //3. If everything ok, send token to client
-
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'successfully logged in',
-    token,
-  });
 };
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    console.log('Login Request Received:', email, password);
+
+    // Validate with Joi or Zod
+    const validationResult = loginUser.validate(req.body, options);
+
+    if (validationResult.error) {
+      console.log('Validation Error:', validationResult.error.details[0].message);
+      return res.render("Login", { error: validationResult.error.details[0].message });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      console.log('User Not Found');
+      return res.render("login", { error: "Invalid email/password" });
+    }
+
+      const token = jwt.sign({ id: user._id }, jwtsecret, { expiresIn: "30d" });
+
+      // Set token as a cookie
+      res.cookie('token', token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+
+      const validUser = await bcrypt.compare(password, user?.password || "");
+  
+       console.log('Password:', password);
+        console.log('User Password:', user.password);
+        console.log('Valid User:', validUser);
+
+    if (validUser) {
+      console.log('Login Successful');
+      // Redirect to root route
+      return res.redirect('/dashboard');
+    } 
+
+      console.log('Invalid Password');
+      return res.render("login", { error: "Invalid email/password" });
+
+
+  } catch (error) {
+    console.log('Error:', error);
+    res.status(500).json({ Error: "Internal server error" });
+  }
+};
+
+
+
+
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
   //1. Getting token and check if it's there
@@ -112,16 +144,5 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
       message: 'The user belonging to this token does no longer exist',
     });
   }
-
-  // //4. Check if user changed password after the token was issued
-  // if (currentUser.changedPasswordAfter(decoded.iat)) {
-  //   return res.status(401).json({
-  //     status: 'fail',
-  //     message: 'User recently changed password! Please log in again.',
-  //   });
-  // }
-
-  // //GRANT ACCESS TO PROTECTED ROUTE
-  // req.user = currentUser;
   next();
-}
+}   

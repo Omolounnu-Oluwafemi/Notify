@@ -1,7 +1,15 @@
-import mongoose from "mongoose";
+import {Document, Schema, model} from 'mongoose'
+import { IUser } from './userModel';
 
+export interface INote extends Document{
+    title: string;
+    description: string;
+    dueDate: string;
+    status: string;
+    userId: IUser | any;
+}
 
-const noteSchema = new mongoose.Schema(
+const noteSchema = new Schema(
     {
     title:{
             type: String,
@@ -12,22 +20,26 @@ const noteSchema = new mongoose.Schema(
             type: String,
             default: 'My note description'
         },
-    DueDate: {
-            type: String,
+    dueDate: {
+            type: Date,
             required: [true, 'A note must have a dueDate'],
         },
     status: {
             type: String,
             required: [true, 'A note must have a status'],
             enum: {
-                values: ['Yet to started', 'started', 'Completed'],
-                message: 'Difficulty level can either be Yet to started, started or Completed',
+                values: ['Pending', 'In Progress', 'Completed'],
+                message: 'status level can either be Pending, In progress or Completed',
               },
         },
+        userId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+          },
     },
 );
 
-export const Note = mongoose.model('Note', noteSchema);
+export const Note = model <INote>('Note', noteSchema);
 
 
 
