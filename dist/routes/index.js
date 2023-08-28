@@ -20,6 +20,10 @@ router.get('/signUp', function (req, res, next) {
 router.get('/login', function (req, res, next) {
     res.render("login");
 });
+// logout
+// router.get('/logout', function(req, res, next) {
+//   res.render("index")
+// });
 // /about
 router.get('/about', function (req, res, next) {
     res.render("About");
@@ -44,10 +48,8 @@ router.get("/dashboard", auth_1.auth, async (req, res) => {
 router.post("/createNote", auth_1.auth, async (req, res) => {
     try {
         const { title, description, dueDate, status } = req.body;
-        console.log('Raw dueDate:', dueDate);
         // Convert the dueDate string to a Date object
         const parsedDueDate = new Date(dueDate);
-        console.log('Parsed dueDate:', parsedDueDate);
         const verified = req.user;
         const note = new notesModel_1.Note({
             title,
@@ -57,7 +59,7 @@ router.post("/createNote", auth_1.auth, async (req, res) => {
             userId: verified.id
         });
         await note.save();
-        return res.redirect("/createPage");
+        return res.redirect("/dashboard");
     }
     catch (error) {
         console.log(error);
@@ -75,7 +77,7 @@ router.get("/editNote/:id", auth_1.auth, async (req, res) => {
         res.status(500).send("Internal server error");
     }
 });
-// Get request to update Note
+// Get request to delete Note
 router.get("/deleteNote/:id", auth_1.auth, async (req, res) => {
     try {
         await notesModel_1.Note.findByIdAndDelete(req.params.id);
@@ -84,6 +86,22 @@ router.get("/deleteNote/:id", auth_1.auth, async (req, res) => {
     catch (error) {
         console.log(error);
         res.status(500).send("Internal server error");
+    }
+});
+// Post request to update Note
+router.post("/updateNote/:id", auth_1.auth, async function (req, res) {
+    try {
+        const updateNote = await notesModel_1.Note.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+        });
+        res.redirect('/dashboard?noteUpdated=true');
+    }
+    catch (error) {
+        res.status(400).json({
+            status: 'Failure',
+            message: error,
+        });
     }
 });
 // // Handle 404

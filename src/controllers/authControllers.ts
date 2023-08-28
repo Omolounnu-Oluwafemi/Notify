@@ -102,47 +102,53 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+// export const protect = async (req: Request, res: Response, next: NextFunction) => {
+//   //1. Getting token and check if it's there
+//   let token;
+//   if (
+//     req.headers.authorization &&
+//     req.headers.authorization.startsWith('Bearer')
+//   ) {
+//     token = req.headers.authorization.split(' ')[1];
+//     console.log(token);
+//   }
 
+//   if (!token) {
+//     return res.status(401).json({
+//       status: 'fail',
+//       message: 'You are not logged in! Please log in to get access.',
+//     });
+//   }
 
+//   //2. Verification token
+//   try {
+//     // eslint-disable-next-line no-shadow
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded.id;
+//   } catch (err) {
+//     return res.status(401).json({
+//       status: 'fail',
+//       message: 'Invalid token',
+//     });
+//   }
 
+//   //3. Check if user still exists
+//   const userExists = await User.findById(req.user);
+//   if (!userExists) {
+//     return res.status(401).json({
+//       status: 'fail',
+//       message: 'The user belonging to this token does no longer exist',
+//     });
+//   }
+//   next();
+// }   
 
-export const protect = async (req: Request, res: Response, next: NextFunction) => {
-  //1. Getting token and check if it's there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-    console.log(token);
-  }
-
-  if (!token) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'You are not logged in! Please log in to get access.',
-    });
-  }
-
-  //2. Verification token
+export const logout = async (req: Request, res: Response) => {
   try {
-    // eslint-disable-next-line no-shadow
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.id;
-  } catch (err) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'Invalid token',
-    });
+    res.clearCookie("token");
+    return res.redirect("/");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Internal server error" });
   }
-
-  //3. Check if user still exists
-  const userExists = await User.findById(req.user);
-  if (!userExists) {
-    return res.status(401).json({
-      status: 'fail',
-      message: 'The user belonging to this token does no longer exist',
-    });
-  }
-  next();
-}   
+}

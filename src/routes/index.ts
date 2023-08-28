@@ -20,6 +20,10 @@ router.get('/signUp', function(req, res, next) {
 router.get('/login', function(req, res, next) {
   res.render("login")
 });
+// logout
+// router.get('/logout', function(req, res, next) {
+//   res.render("index")
+// });
 
 // /about
 router.get('/about', function(req, res, next) {
@@ -47,18 +51,13 @@ router.get("/dashboard", auth, async (req: Request | any, res: Response) => {
   }
 });
 
-
   // create Note
   router.post("/createNote", auth, async (req: Request | any, res:Response) => {   
     try {
       const { title, description, dueDate, status } = req.body;
 
-        console.log('Raw dueDate:', dueDate);
-
         // Convert the dueDate string to a Date object
         const parsedDueDate = new Date(dueDate);
-
-        console.log('Parsed dueDate:', parsedDueDate);
 
         const verified = req.user;
 
@@ -72,7 +71,7 @@ router.get("/dashboard", auth, async (req: Request | any, res: Response) => {
   
          await note.save()
 
-       return res.redirect("/createPage")
+       return res.redirect("/dashboard")
       
   
     } catch (error) {
@@ -92,7 +91,7 @@ router.get("/dashboard", auth, async (req: Request | any, res: Response) => {
     }
   });
 
-// Get request to update Note
+// Get request to delete Note
   router.get("/deleteNote/:id", auth, async (req: Request | any, res: Response) => {
     try {
       await Note.findByIdAndDelete(req.params.id);
@@ -102,14 +101,28 @@ router.get("/dashboard", auth, async (req: Request | any, res: Response) => {
       res.status(500).send("Internal server error");
     }
   });
+
+  // Post request to update Note
+  router.post ( "/updateNote/:id", auth, async function(req: Request, res: Response) {
+    try {
+        const updateNote = await Note.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true,
+          })
+          res.redirect('/dashboard?noteUpdated=true');
+        } catch (error) {
+            res.status(400).json({
+                status: 'Failure',
+                message: error,
+            });
+    }
+})
+
+
 // // Handle 404
 // router.get('*', function(req, res) {
 //   res.status(404).render("404")
 // })
-
-
-
-
 
 export default router;
 

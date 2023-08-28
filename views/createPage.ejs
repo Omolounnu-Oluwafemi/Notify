@@ -41,7 +41,7 @@
     </form>
 
     <div class="btn, col-md-3 text-end">
-      <a href="/users/dashboard/logout" type="button" class="btn btn-outline-primary"
+      <a href="/logout" type="button" class="btn btn-outline-primary"
         >Logout</a
       >
     </div>
@@ -64,7 +64,7 @@
                 <div class="d-flex flex-row align-items-center mb-4">
                   <div class="form-outline flex-fill mb-0">
                     <label class="form-label" for="form3Example4c">Description</label>
-                    <input type="text" id="form3Example4c" class="form-control" name="description" placeholder="Describe what you are writing about"/>
+                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Your description goes in here"></textarea>
                   </div>
                 </div>
 
@@ -81,7 +81,7 @@
                       <label class="form-label" for="status">Status</label>
                       <select id="status" class="form-select" name="status">
                         <option value="Pending">Pending</option>
-                        <option value="In-Progress">In Progress</option>
+                        <option value="In Progress">In Progress</option>
                         <option value="Completed">Completed</option>
                       </select>
                     </div>
