@@ -1,0 +1,44 @@
+[{
+  "_id": {
+    "$oid": "64ec5884ff49f42a8696c054"
+  },
+  "grades": [
+    {
+      "date": {
+        "$date": "2015-01-12T00:00:00.000Z"
+      },
+      "grade": "A",
+      "score": 10
+    },
+    {
+      "date": {
+        "$date": "2014-08-11T00:00:00.000Z"
+      },
+      "grade": "A",
+      "score": 9
+    },
+    {
+      "date": {
+        "$date": "2014-01-14T00:00:00.000Z"
+      },
+      "grade": "A",
+      "score": 13
+    },
+    {
+      "date": {
+        "$date": "2013-02-07T00:00:00.000Z"
+      },
+      "grade": "A",
+      "score": 10
+    },
+    {
+      "date": {
+        "$date": "2012-04-30T00:00:00.000Z"
+      },
+      "grade": "A",
+      "score": 11
+    }
+  ],
+  "name": "Club Macanudo (Cigar Bar)",
+  "restaurant_id": "40526406"
+}]
