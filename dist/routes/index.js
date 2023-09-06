@@ -20,10 +20,6 @@ router.get('/signUp', function (req, res, next) {
 router.get('/login', function (req, res, next) {
     res.render("login");
 });
-// logout
-// router.get('/logout', function(req, res, next) {
-//   res.render("index")
-// });
 // /about
 router.get('/about', function (req, res, next) {
     res.render("About");

@@ -5,21 +5,37 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan'
 import dotenv from 'dotenv'
 import database from './config/database';
+import passport from "passport";
+import session from "express-session";
+import { passportSetup } from './controllers/googlepassport';
 
 import indexRouter from './routes/index'
 import usersRouter from './routes/users';
 import notesRouter from './routes/notes';
 import authRouter from './routes/auth'
 
+
 database()
 dotenv.config()
+passportSetup()
 
 const app = express();
+
+// initialize cookie-session to allow us track the user's session
+app.use(
+  session({
+    secret: "secr3t",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // view engine setup
 app.set("views", path.join(__dirname, "..", "views"));  
 app.set('view engine', 'ejs');
-
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -27,8 +43,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "..",'public')));
 
-app.use('/' , indexRouter);
-app.use('/auth', authRouter);
+app.use('/' , [indexRouter, authRouter]);
 app.use('/users', usersRouter);
 app.use('/notes', notesRouter);
 

@@ -7,6 +7,7 @@ export interface IUser extends Document {
   password: string;
   passwordConfirm: string;
   passwordCreatedAt: Date;
+  googleId: string;
 }
 
 const userSchema = new Schema({
@@ -22,12 +23,16 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    allowNull: true,
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confirm your password']
+   allowNull: true,
   },
+  googleId: { 
+    type: String,
+    allowNull: true,
+}
 });
 
 // userSchema.pre('save', async function(next) {

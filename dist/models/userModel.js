@@ -15,12 +15,16 @@ const userSchema = new mongoose_1.Schema({
     },
     password: {
         type: String,
-        required: [true, 'Please provide a password'],
+        allowNull: true,
     },
     passwordConfirm: {
         type: String,
-        required: [true, 'Please confirm your password']
+        allowNull: true,
     },
+    googleId: {
+        type: String,
+        allowNull: true,
+    }
 });
 // userSchema.pre('save', async function(next) {
 //     // This function will only run if password was modified

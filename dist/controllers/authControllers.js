@@ -11,6 +11,12 @@ const userModel_1 = require("../models/userModel");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const jwtsecret = process.env.SECRET_JWT;
+// Utility function to generate token
+const generateToken = (id) => {
+    return jsonwebtoken_1.default.sign({ id }, jwtsecret, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+};
 const signUp = async (req, res, next) => {
     try {
         const validationResult = utils_1.registerUser.validate(req.body, utils_1.options);
@@ -33,12 +39,6 @@ const signUp = async (req, res, next) => {
             });
             await newUser.save();
             const { _id } = newUser;
-            // Utility function to generate token
-            const generateToken = (id) => {
-                return jsonwebtoken_1.default.sign({ id }, jwtsecret, {
-                    expiresIn: process.env.JWT_EXPIRES_IN,
-                });
-            };
             const token = generateToken(_id);
             return res.redirect("/login");
         }
@@ -64,7 +64,9 @@ const login = async (req, res) => {
             console.log('User Not Found');
             return res.render("login", { error: "Invalid email/password" });
         }
-        const token = jsonwebtoken_1.default.sign({ id: user._id }, jwtsecret, { expiresIn: "30d" });
+        const { _id } = user;
+        // const token = jwt.sign({ id: user._id }, jwtsecret, { expiresIn: "30d" });
+        const token = generateToken(_id);
         // Set token as a cookie
         res.cookie('token', token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
         const validUser = await bcryptjs_1.default.compare(password, (user === null || user === void 0 ? void 0 : user.password) || "");

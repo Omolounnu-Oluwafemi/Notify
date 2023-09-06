@@ -9,6 +9,12 @@ import { config } from 'dotenv';
 config()
 
 const jwtsecret: Secret = process.env.SECRET_JWT as Secret;
+   // Utility function to generate token
+   const generateToken = (id: Types.ObjectId): string => {
+    return jwt.sign({ id }, jwtsecret, {
+      expiresIn: process.env.JWT_EXPIRES_IN as string,
+    });
+  }
 
 export const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -38,12 +44,6 @@ export const signUp = async (req: Request, res: Response, next: NextFunction) =>
 
       const { _id } = newUser;
 
-      // Utility function to generate token
-      const generateToken = (id: Types.ObjectId): string => {
-        return jwt.sign({ id }, jwtsecret, {
-          expiresIn: process.env.JWT_EXPIRES_IN as string,
-        });
-      }
       const token: string = generateToken(_id);
 
       return res.redirect("/login")
@@ -74,9 +74,9 @@ export const login = async (req: Request, res: Response) => {
       console.log('User Not Found');
       return res.render("login", { error: "Invalid email/password" });
     }
-
-      const token = jwt.sign({ id: user._id }, jwtsecret, { expiresIn: "30d" });
-
+    const { _id } = user;
+     // const token = jwt.sign({ id: user._id }, jwtsecret, { expiresIn: "30d" });
+      const token: string = generateToken(_id);
       // Set token as a cookie
       res.cookie('token', token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
 
